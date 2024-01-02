@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h1>Beamer: Internal Beam Load Calculator</h1>
+<form action="/" method="POST"> <!-- link to function in routes.py -->
+
+  {{ form.csrf_token }}
+  <br>
+  {{ form.struct_type.label }}
+  {{ form.struct_type }}
+  <br>
+  {{ form.span_length.label }}
+  {{ form.span_length }} ft
+  <br>
+  {{ form.load_distribution.label }}
+  {{ form.load_distribution }}
+  <br>
+  {{ form.load.label }}
+  {{ form.load }} (k or k/ft)
+  <span id="load_location_div">
+  <br>
+  {{ form.load_location.label }}
+  {{ form.load_location }}
+  </span>
+  <br>
+  {{ form.E.label }}
+  {{ form.E }} ksi
+  <br>
+  {{ form.I.label }}
+  {{ form.I }} in<sup>4</sup>
+  <br>
+  {{ form.load_case.label }}
+  {{ form.load_case }}
+  <br>
+  {{ form.load_type.label }}
+  {{ form.load_type }}
+  <br>
+  {{ form.load_factor.label }}
+  {{ form.load_factor }}
+  <br>
+
+  {{ form.submit }}
+
+</form>
+
+<br>
+<div id="reaction-1"></div>
+<div id="reaction-2"></div>
+<br>
+<div id="shear"></div>
+<br>
+<div id="moment-1"></div>
+<div id="moment-2"></div>
+<br>
+<div id="deflection"></div>
+
+<script src="/static/js/form-input.js"></script> <!-- link to js file -->
+
+{% endblock %}

@@ -1,0 +1,71 @@
+from flask_wtf import FlaskForm
+from wtforms import StringField, DecimalField, SelectField, SubmitField
+
+class InputForm(FlaskForm):
+
+    struct_type = SelectField(
+        'Select Structure Type:',
+        choices = [('simple', 'Simply Supported'), ('cantilever', 'Cantilever'), ('fixed', 'Fixed-Fixed')]
+        )
+
+    span_length = StringField(
+        'Enter Span Length:',
+        default=10
+        )
+
+    load_distribution = SelectField(
+        'Select Load Distribution:',
+        choices = [('uniform', 'Uniform'), ('point', 'Point'), ('triangular', 'Triangular')]
+        )
+
+    load = DecimalField(
+        'Enter Load:',
+        default=1
+        )
+
+    load_location = StringField(
+        'Enter "a" dimension:'
+        )
+
+    E = DecimalField(
+        'Enter Modulus of Elasticity:',
+        default=29000
+        )
+
+    I = DecimalField(
+        'Enter Moment of Inertia:',
+        default=700
+        )
+
+    load_case = SelectField(
+        'Select AASHTO Load Case:',
+        choices = [
+            ('ser_I', 'Service I'),
+            ('str_I', 'Strength I'),
+            ('str_IV', 'Strength IV'),
+            ('str_V', 'Strength V'),
+            ('ee_II', 'Extreme Event II')
+            ]
+        )
+
+    load_type = SelectField(
+        'Select AASHTO Load Type:',
+        choices = [
+            ('DC', 'DC'),
+            ('DW', 'DW'),
+            ('EH', 'EH'),
+            ('EV', 'EV'),
+            ('ES', 'ES'),
+            ('LL', 'LL'),
+            ('WS', 'WS'),
+            ('WL', 'WL'),
+            ('CT', 'CT')
+            ]
+        )
+
+    load_factor = DecimalField(
+        'Load Factor:',
+        default=1
+        )
+
+    submit = SubmitField()
