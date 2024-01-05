@@ -2,30 +2,23 @@ import os, math
 import numpy as np
 import pandas as pd
 
-directory = os.getcwd() + '/app/app/'
-factor_df = pd.read_csv(directory + 'max_factors.csv', index_col=0)
-
-min_factor_dict = {
-    'DC': 0.9,
-    'DW': 0.65,
-    'ES': 0.75,
-    'EH': 0.9,
-    'EV': 1
-}
 
 def max_mag(num_array):
     return num_array[np.argmax(np.abs(num_array))]
 
 
-def get_load_factor(load_case, load_type, factor_type='max'):
-    if factor_type == 'min' and load_case.startswith('str'):
-        try:
-            load_factor = min_factor_dict[load_type]
-        except:
-            load_factor = factor_df.loc[load_case, load_type]
-    else:
-        load_factor = factor_df.loc[load_case, load_type]
-    return '{0:.2f}'.format(load_factor)
+class AASHTOLoadFactors:
+    def __init__(self, max_factor_filepath, min_factor_filepath):
+        self.max_factor_df = pd.read_csv(max_factor_filepath, index_col=0)
+        self.min_factor_df = pd.read_csv(min_factor_filepath, index_col=0)
+
+    def return_factor(self, load_case, load_type, factor_type='max'):
+        if factor_type == 'min':
+            factor_df = self.min_factor_df
+        else:
+            factor_df = self.max_factor_df
+        self.factor = factor_df.loc[load_case, load_type]
+        return '{:.2f}'.format(self.factor)
 
 
 def get_load_location(load_distribution, struct_type, L):

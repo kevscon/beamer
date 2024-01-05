@@ -16,10 +16,10 @@ def home():
     return render_template('home.html', form=form) # link to html script with form
 
 
-@app.route('/<load_case>/<load_type>/load-factor')
-def load_factor_default(load_case, load_type):
-    from app.app.funcs import get_load_factor
-    load_factor = get_load_factor(load_case, load_type)
+@app.route('/<load_case>/<load_type>/<factor_type>/load-factor')
+def load_factor_default(load_case, load_type, factor_type):
+    from app.app.route_funcs import get_load_factor
+    load_factor = get_load_factor(load_case, load_type, factor_type)
     return jsonify(load_factor)
 
 

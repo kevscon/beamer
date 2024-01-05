@@ -1,4 +1,5 @@
 from flask import request
+import os
 
 def process_form():
 
@@ -20,3 +21,12 @@ def process_form():
     from app.app.funcs import run_beamer
     output = run_beamer(struct_type, load_distribution, factored_load, span_length, a, E, I)
     return output
+
+def get_load_factor(load_case, load_type, factor_type='max'):
+    max_factor_filepath = os.getcwd() + '/app/app/data/max_factors.csv'
+    min_factor_filepath = os.getcwd() + '/app/app/data/min_factors.csv'
+    from app.app.funcs import AASHTOLoadFactors
+    
+    factor_cls = AASHTOLoadFactors(max_factor_filepath, min_factor_filepath)
+    load_factor = factor_cls.return_factor(load_case, load_type, factor_type)
+    return load_factor

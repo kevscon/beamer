@@ -1,18 +1,14 @@
 
-
-function getLoadFactor(load_case, load_type) {
-  url = '/' + load_case + '/' + load_type + '/load-factor'
-  fetch(url)
-  .then(function(response) {
-    response.json().then(function(data) {
-      $("#load_factor").val(data);
-    });
-  });
+function updateModelImage() {
+  let img_src = "/static/img/beam_diagrams/" + $("#struct_type").val() +
+    "_" + $("#load_distribution").val() + ".png";
+  $("#model-img").attr("src", img_src);
 };
 
 
-function getLoadLocation(load_distribution, struct_type, span_length) {
-  url = '/' + load_distribution + '/' + struct_type + '/' + span_length + '/load-location'
+function getLoadLocation() {
+  url = '/' + $("#load_distribution").val() + '/' + $("#struct_type").val() +
+    '/' + $("#span_length").val() + '/load-location';
   fetch(url)
   .then(function(response) {
     response.json().then(function(data) {
@@ -22,10 +18,21 @@ function getLoadLocation(load_distribution, struct_type, span_length) {
 };
 
 
+function getLoadFactor(factor_type) {
+  url = '/' + $("#load_case").val() + '/' + $("#load_type").val() + '/' + factor_type + '/load-factor';
+  fetch(url)
+  .then(function(response) {
+    response.json().then(function(data) {
+      $("#load_factor").val(data);
+    });
+  });
+};
+
+
 function formatHTML(beam_data) {
 
   if (beam_data.reaction.length == 1) {
-    var reaction = "R1: " + beam_data.reaction[0].toFixed(2) + " kips";
+    var reaction = "R: " + beam_data.reaction[0].toFixed(2) + " kips";
     $("#reaction-1").html(reaction);
     $("#reaction-2").html("");
   } else {
@@ -81,51 +88,48 @@ function processForm() {
 
 $(document).ready(function() {
 
-  $("#load_location_div").hide();
+  $("#load_location_span").hide();
 
   $("#load_distribution").change(function() {
-    let load_distribution = $("#load_distribution").val();
-    let struct_type = $("#struct_type").val();
-    let span_length = $("#span_length").val();
-    if (load_distribution == 'point') {
-      let a = getLoadLocation(load_distribution, struct_type, span_length);
-      $("load_location").val(a);
-      $("#load_location_div").show();
+    updateModelImage();
+    if ($("#load_distribution").val() == "point") {
+      getLoadLocation();
+      $("#load_location_span").show();
+      $("#load_units_span").text("k");
+      $("#load_label").text("P: ");
     } else {
-      $("#load_location_div").hide();
+      $("#load_units_span").text("k/ft");
+      $("#load_location_span").hide();
+      if ($("#load_distribution").val() == "triangular") {
+        $("#load_label").text("q: ");
+      } else {
+        $("#load_label").text("w: ");
+      }
     }
   });
 
   $("#struct_type").change(function() {
-    let load_distribution = $("#load_distribution").val();
-    let struct_type = $("#struct_type").val();
-    let span_length = $("#span_length").val();
-    if (load_distribution == 'point') {
-      let a = getLoadLocation(load_distribution, struct_type, span_length);
-      $("load_location").val(a);
+    updateModelImage();
+
+    if ($("#load_distribution").val() == "point") {
+      getLoadLocation();
     }
   });
 
   $("#span_length").keyup(function() {
-    let load_distribution = $("#load_distribution").val();
-    let struct_type = $("#struct_type").val();
-    let span_length = $("#span_length").val();
-    if (load_distribution == 'point') {
-      let a = getLoadLocation(load_distribution, struct_type, span_length);
-      $("load_location").val(a);
+    if ($("#load_distribution").val() == 'point') {
+      getLoadLocation();
     }
   });
 
-  $("#load_case").change(function() {
-    let load_case = $("#load_case").val();
-    let load_type = $("#load_type").val();
-    getLoadFactor(load_case, load_type);
+  $(".load-factor").change(function() {
+    let factor_type = $('input[name="factor_type"]:checked').val();
+    getLoadFactor(factor_type);
   });
 
-  $("#load_type").change(function() {
-    let load_case = $("#load_case").val();
-    let load_type = $("#load_type").val();
-    getLoadFactor(load_case, load_type);
+  $("input[type=radio]").change(function() {
+    let factor_type = $('input[name="factor_type"]:checked').val();
+    getLoadFactor(factor_type);
   });
 
   $("form").submit(function(e) {

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, DecimalField, SelectField, SubmitField
+from wtforms import StringField, DecimalField, SelectField, RadioField, SubmitField
 
 class InputForm(FlaskForm):
 
@@ -61,6 +61,11 @@ class InputForm(FlaskForm):
             ('WL', 'WL'),
             ('CT', 'CT')
             ]
+        )
+
+    factor_type = RadioField(
+        choices=[('max', 'Max'), ('min', 'Min')],
+        default='max'
         )
 
     load_factor = DecimalField(
