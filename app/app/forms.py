@@ -18,7 +18,7 @@ class InputForm(FlaskForm):
         choices = [('uniform', 'Uniform'), ('point', 'Point'), ('triangular', 'Triangular')]
         )
 
-    load = DecimalField(
+    load = StringField(
         'Enter Load:',
         default=1
         )
@@ -27,12 +27,12 @@ class InputForm(FlaskForm):
         'Enter "a" dimension:'
         )
 
-    E = DecimalField(
+    E = StringField(
         'Enter Modulus of Elasticity:',
         default=29000
         )
 
-    I = DecimalField(
+    I = StringField(
         'Enter Moment of Inertia:',
         default=700
         )
@@ -68,9 +68,9 @@ class InputForm(FlaskForm):
         default='max'
         )
 
-    load_factor = DecimalField(
+    load_factor = StringField(
         'Load Factor:',
-        default=1
+        default='1.00'
         )
 
     submit = SubmitField()
