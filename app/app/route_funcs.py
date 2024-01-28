@@ -12,7 +12,7 @@ def process_form():
     load = float(request.form['load'])
     a = request.form['load_location']
     if a == '':
-        pass
+        a_feet = a
     else:
         a = request.form['load_location']
         a_feet = return_feet(a)

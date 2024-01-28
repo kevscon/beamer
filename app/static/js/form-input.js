@@ -124,13 +124,13 @@ $(document).ready(function() {
     updateModelImage();
 
     if ($("#load_distribution").val() == "point") {
-      // getLoadLocation();
       const load_location = await getPointLocation();
       $("#load_location").val(load_location);
-
+      processForm();
+    } else {
+      processForm();
     }
 
-    processForm();
   });
 
   $("#span_length").keyup(function() {
