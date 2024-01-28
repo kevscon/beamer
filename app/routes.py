@@ -9,6 +9,7 @@ def home():
     form = InputForm()
 
     if request.method == 'POST': # check if form data is submitted
+        form_data = request.form
         from app.app.route_funcs import process_form
         output = process_form()
         return jsonify({'output': output}) # sent to js script
@@ -16,17 +17,22 @@ def home():
     return render_template('home.html', form=form) # link to html script with form
 
 
-@app.route('/<load_case>/<load_type>/<factor_type>/load-factor')
-def load_factor_default(load_case, load_type, factor_type):
+@app.route('/load-factors')
+def load_factors():
     from app.app.route_funcs import get_load_factor
-    load_factor = get_load_factor(load_case, load_type, factor_type)
-    return jsonify(load_factor)
+    load_factor_dict = get_load_factor()
+    return jsonify(load_factor_dict)
 
 
-@app.route('/<load_distribution>/<struct_type>/<span_length>/load-location')
-def load_location_default(load_distribution, struct_type, span_length):
+@app.route('/point-location', methods=['POST'])
+def point_location():
+    data = request.get_json()
+    from app.app.ft_in import return_feet
+    span_length_feet = return_feet(data['span_length'])
+    load_distribution = data['load_distribution']
+    struct_type = data['struct_type']
     from app.app.funcs import get_load_location
-    load_location = get_load_location(load_distribution, struct_type, span_length)
+    load_location = get_load_location(load_distribution, struct_type, span_length_feet)
     return jsonify(load_location)
 
 

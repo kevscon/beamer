@@ -12,7 +12,7 @@
     {{ form.struct_type }}
     <br>
     {{ form.span_length.label }}
-    {{ form.span_length }} ft
+    {{ form.span_length }}
     <br>
     {{ form.load_distribution.label }}
     {{ form.load_distribution }}
@@ -47,20 +47,22 @@
     {{ form.load_factor }}
     <br>
 
-    {{ form.submit }}
+    <!-- {{ form.submit }} -->
 
   </form>
 
-  <br>
-  <div id="reaction-1"></div>
-  <div id="reaction-2"></div>
-  <br>
-  <div id="shear"></div>
-  <br>
-  <div id="moment-1"></div>
-  <div id="moment-2"></div>
-  <br>
-  <div id="deflection"></div>
+  <div id="output">
+    <br>
+    <div id="reaction-1"></div>
+    <div id="reaction-2"></div>
+    <br>
+    <div id="shear"></div>
+    <br>
+    <div id="moment-1"></div>
+    <div id="moment-2"></div>
+    <br>
+    <div id="deflection"></div>
+  </div>
 
 </div>
 

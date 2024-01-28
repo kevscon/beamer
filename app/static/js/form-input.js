@@ -1,4 +1,9 @@
 
+function getRadioVal(name) {
+  let tagString = 'input[name=' + name + ']:checked';
+  return $(tagString).val();
+}
+
 function updateModelImage() {
   let img_src = "/static/img/beam_diagrams/" + $("#struct_type").val() +
     "_" + $("#load_distribution").val() + ".png";
@@ -6,27 +11,43 @@ function updateModelImage() {
 };
 
 
-function getLoadLocation() {
-  url = '/' + $("#load_distribution").val() + '/' + $("#struct_type").val() +
-    '/' + $("#span_length").val() + '/load-location';
-  fetch(url)
-  .then(function(response) {
-    response.json().then(function(data) {
-      $("#load_location").val(data);
+function getPointLocation() {
+  return new Promise((resolve, reject) => {
+    var point_data = {
+      load_distribution: $("#load_distribution").val(),
+      struct_type: $("#struct_type").val(),
+      span_length: $("#span_length").val()
+    };
+
+    $.ajax({
+        url: '/point-location',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(point_data),
+        success: function (response) {
+            resolve(response);
+        },
+        error: function (error) {
+            console.error('Error:', error);
+        }
     });
+
   });
-};
+}
 
 
-function getLoadFactor(factor_type) {
-  url = '/' + $("#load_case").val() + '/' + $("#load_type").val() + '/' + factor_type + '/load-factor';
-  fetch(url)
-  .then(function(response) {
-    response.json().then(function(data) {
-      $("#load_factor").val(data);
+function getLoadFactor() {
+  return new Promise((resolve, reject) => {
+    var factor_type = getRadioVal("factor_type")
+    var load_case = $("#load_case").val();
+    var load_type = $("#load_type").val();
+    $.getJSON('/load-factors')
+    .done( function(data) {
+      var load_factor = data[factor_type][load_case][load_type];
+      resolve(load_factor);
     });
   });
-};
+}
 
 
 function formatHTML(beam_data) {
@@ -66,37 +87,27 @@ function processForm() {
   $.ajax({
     type : "POST",
     url : "/", // linked to routes.py page
-    data: {
-      struct_type : $("#struct_type").val(), // linked to html id
-      span_length : $("#span_length").val(),
-      load_distribution: $("#load_distribution").val(),
-      load: $("#load").val(),
-      load_location: $("#load_location").val(),
-      E: $("#E").val(),
-      I: $("#I").val(),
-      load_case: $("#load_case").val(),
-      load_type: $("#load_type").val(),
-      load_factor: $("#load_factor").val()
-    },
-    success:function(data) {
+    data: $("form").serialize(),
+    success: function(data) {
       formatHTML(data.output);
     }
   });
-};
-
+}
 
 
 $(document).ready(function() {
 
   $("#load_location_span").hide();
 
-  $("#load_distribution").change(function() {
+  $("#load_distribution").change(async function() {
     updateModelImage();
     if ($("#load_distribution").val() == "point") {
-      getLoadLocation();
+      const load_location = await getPointLocation();
+      $("#load_location").val(load_location);
       $("#load_location_span").show();
       $("#load_units_span").text("k");
       $("#load_label").text("P: ");
+      processForm();
     } else {
       $("#load_units_span").text("k/ft");
       $("#load_location_span").hide();
@@ -106,35 +117,49 @@ $(document).ready(function() {
         $("#load_label").text("w: ");
       }
     }
+    processForm();
   });
 
-  $("#struct_type").change(function() {
+  $("#struct_type").change(async function() {
     updateModelImage();
 
     if ($("#load_distribution").val() == "point") {
-      getLoadLocation();
+      // getLoadLocation();
+      const load_location = await getPointLocation();
+      $("#load_location").val(load_location);
+
     }
+
+    processForm();
   });
 
   $("#span_length").keyup(function() {
     if ($("#load_distribution").val() == 'point') {
-      getLoadLocation();
+      getPointLocation();
     }
   });
 
-  $(".load-factor").change(function() {
-    let factor_type = $('input[name="factor_type"]:checked').val();
-    getLoadFactor(factor_type);
-  });
-
-  $("input[type=radio]").change(function() {
-    let factor_type = $('input[name="factor_type"]:checked').val();
-    getLoadFactor(factor_type);
-  });
-
-  $("form").submit(function(e) {
-    e.preventDefault();
+  $(".load-factor").change(async function() {
+    let factor_type = getRadioVal("factor_type")
+    const load_factor = await getLoadFactor();
+    $("#load_factor").val(load_factor);
     processForm();
   });
+
+  $("input[type=radio]").change(async function() {
+    const load_factor = await getLoadFactor();
+    $("#load_factor").val(load_factor);
+    processForm();
+  });
+
+  $("input").keyup(function() {
+    processForm();
+  });
+
+
+  // $("form").submit(function(e) {
+  //   e.preventDefault();
+  //   processForm();
+  // });
 
 });
